@@ -115,10 +115,36 @@ function loadCommandDatabase() {
         { name: 'sort', category: 'text', difficulty: 'intermediate', description: 'Sort lines', example: 'sort -n numbers.txt', syntax: 'sort [OPTIONS] [FILE...]', tags: ['text', 'sort'] }
     ];
     
-    // Build search index
+    // Augment database with DevOps Examples (from examples-data.js) if available
+    try {
+        if (typeof devopsExamples !== 'undefined' && Array.isArray(devopsExamples)) {
+            const exampleCommands = [];
+            devopsExamples.forEach(section => {
+                if (section && Array.isArray(section.commands)) {
+                    section.commands.forEach(cmd => {
+                        // Normalize into the same shape as commandDatabase entries
+                        exampleCommands.push({
+                            name: cmd.name || 'Command',
+                            category: section.category || 'examples',
+                            difficulty: section.difficulty || 'intermediate',
+                            description: cmd.description || '',
+                            example: cmd.command || '',
+                            syntax: cmd.command || '',
+                            tags: ['devops', 'example', section.category || 'examples']
+                        });
+                    });
+                }
+            });
+            commandDatabase = commandDatabase.concat(exampleCommands);
+        }
+    } catch (_) {
+        // Fail silently if examples are not available; core search still works
+    }
+
+    // Build search index (including examples if present)
     searchIndex = commandDatabase.map(cmd => ({
         ...cmd,
-        searchText: `${cmd.name} ${cmd.description} ${cmd.example} ${cmd.syntax} ${cmd.tags.join(' ')}`.toLowerCase()
+        searchText: `${cmd.name} ${cmd.description} ${cmd.example} ${cmd.syntax} ${(cmd.tags || []).join(' ')}`.toLowerCase()
     }));
 }
 
@@ -197,11 +223,18 @@ function hideSearchResults() {
 }
 
 function selectCommand(commandName) {
-    // Copy command to clipboard
+    // Find the command in the database
     const command = commandDatabase.find(cmd => cmd.name === commandName);
     if (command) {
-        copyToClipboard(command.example);
-        hideSearchResults();
+        // Check if this is a DevOps example command
+        if (command.section && command.section !== 'Core Commands') {
+            // Navigate to examples page with the specific section
+            window.location.href = `examples.html#${command.section.replace(/\s+/g, '-').toLowerCase()}`;
+        } else {
+            // For core commands, copy to clipboard
+            copyToClipboard(command.example);
+            hideSearchResults();
+        }
     }
 }
 
@@ -334,33 +367,39 @@ function initializeCommandChart() {
     
     const option = {
         backgroundColor: 'transparent',
-        title: {
-            text: 'Command Usage by Category',
-            textStyle: {
-                color: '#ffffff',
-                fontSize: 18
-            }
-        },
         tooltip: {
             trigger: 'item',
             backgroundColor: '#1a1a1a',
             borderColor: '#00ff41',
+            borderWidth: 1,
             textStyle: {
-                color: '#ffffff'
+                color: '#ffffff',
+                fontSize: 12
+            },
+            formatter: '{b}: {c} commands ({d}%)',
+            position: function (point, params, dom, rect, size) {
+                return [point[0] + 10, point[1] - 10];
             }
         },
         legend: {
             orient: 'vertical',
             left: 'left',
+            top: 'center',
+            itemGap: 6,
             textStyle: {
-                color: '#ffffff'
-            }
+                color: '#ffffff',
+                fontSize: 10
+            },
+            itemWidth: 10,
+            itemHeight: 10
         },
         series: [
             {
                 name: 'Commands',
                 type: 'pie',
                 radius: '50%',
+                center: ['65%', '50%'],
+                avoidLabelOverlap: true,
                 data: [
                     { value: 35, name: 'Basic Commands', itemStyle: { color: '#00ff41' } },
                     { value: 25, name: 'Networking', itemStyle: { color: '#0066cc' } },
@@ -375,6 +414,23 @@ function initializeCommandChart() {
                         shadowBlur: 10,
                         shadowOffsetX: 0,
                         shadowColor: 'rgba(0, 255, 65, 0.5)'
+                    }
+                },
+                label: {
+                    show: true,
+                    formatter: '{b}\n{c}',
+                    color: '#ffffff',
+                    fontSize: 10,
+                    fontWeight: 'bold',
+                    position: 'outside'
+                },
+                labelLine: {
+                    show: true,
+                    length: 15,
+                    length2: 10,
+                    lineStyle: {
+                        color: '#666666',
+                        width: 1
                     }
                 }
             }

@@ -132,9 +132,149 @@
             transform: translateY(0);
             transition: all 0.6s ease;
         }
+        
+        /* Birthday Notification Styles */
+        .birthday-notification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .birthday-notification.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .birthday-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 2px solid #00ff41;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 255, 65, 0.3);
+            transform: scale(0.8);
+            transition: all 0.5s ease;
+        }
+        
+        .birthday-notification.show .birthday-card {
+            transform: scale(1);
+        }
+        
+        .birthday-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #ffffff;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .birthday-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .birthday-sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00ff41;
+            border-radius: 50%;
+            animation: sparkle 2s infinite;
+        }
+        
+        .birthday-sparkle:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+        .birthday-sparkle:nth-child(2) { top: 30%; right: 20%; animation-delay: 0.5s; }
+        .birthday-sparkle:nth-child(3) { bottom: 30%; left: 30%; animation-delay: 1s; }
+        .birthday-sparkle:nth-child(4) { bottom: 20%; right: 30%; animation-delay: 1.5s; }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body class="index-page">
+    <!-- Birthday Notification -->
+    <div id="birthday-notification" class="birthday-notification">
+        <div class="birthday-card">
+            <div class="birthday-sparkle"></div>
+            <div class="birthday-sparkle"></div>
+            <div class="birthday-sparkle"></div>
+            <div class="birthday-sparkle"></div>
+            
+            <button class="birthday-close" onclick="closeBirthdayNotification()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </button>
+            
+            <!-- Small Countdown Timer in Top-Left -->
+            <div class="absolute top-4 left-4 bg-gray-800 rounded-lg p-2 opacity-80">
+                <div class="text-xs text-gray-400 mb-1">Time until Birthday</div>
+                <div id="countdown" class="text-sm font-bold text-green-400 terminal-font">
+                    <div class="flex space-x-1">
+                        <div class="bg-gray-700 rounded px-1 py-0.5 text-center min-w-[30px]">
+                            <div id="days" class="text-lg">0</div>
+                            <div class="text-xs text-gray-400">D</div>
+                        </div>
+                        <div class="bg-gray-700 rounded px-1 py-0.5 text-center min-w-[30px]">
+                            <div id="hours" class="text-lg">0</div>
+                            <div class="text-xs text-gray-400">H</div>
+                        </div>
+                        <div class="bg-gray-700 rounded px-1 py-0.5 text-center min-w-[30px]">
+                            <div id="minutes" class="text-lg">0</div>
+                            <div class="text-xs text-gray-400">M</div>
+                        </div>
+                        <div class="bg-gray-700 rounded px-1 py-0.5 text-center min-w-[30px]">
+                            <div id="seconds" class="text-lg">0</div>
+                            <div class="text-xs text-gray-400">S</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <div class="text-6xl mb-4">🎉</div>
+                <h2 class="text-3xl font-bold text-green-400 mb-2 terminal-font">In advance Happy Birthday!</h2>
+                <h3 class="text-2xl font-bold text-white mb-4">Naagamma😂😂</h3>
+                <p class="text-lg text-gray-300 mb-6">
+                    <span class="text-blue-400">Don't ask for a gift — this site is the gift</span>
+                </p>
+                     
+                </div>           <div class="text-sm text-gray-400">
+    
+            </div>
+            
+            <div class="flex justify-center space-x-4">
+                <button onclick="closeBirthdayNotification()" class="px-6 py-3 bg-green-500 text-black font-bold rounded-lg hover:bg-green-400 transition-all duration-300 transform hover:scale-105">
+                    Thank You! 💝
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,7 +289,7 @@
                     <a href="index.html" class="nav-link text-green-400 hover:text-green-300 px-3 py-2">Search</a>
                     <a href="commands.html" class="nav-link text-gray-300 hover:text-green-300 px-3 py-2">Commands</a>
                     <!-- <a href="scripting.html" class="nav-link text-gray-300 hover:text-green-300 px-3 py-2">Scripting</a> -->
-                    <a href="examples.html" class="nav-link text-gray-300 hover:text-green-300 px-3 py-2">Examples</a>
+                    <a href="examples.html" class="nav-link text-gray-300 hover:text-green-300 px-3 py-2">Devops_Examples</a>
                 </div>
                 <div class="md:hidden">
                     <button id="mobile-menu-btn" class="text-green-400 hover:text-green-300">
@@ -157,6 +297,15 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                     </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="md:hidden hidden bg-black border-t border-gray-800 absolute top-16 left-0 right-0 z-50">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <a href="index.html" class="block px-3 py-2 text-gray-300 hover:text-green-300 hover:bg-gray-800 rounded-md">Home</a>
+                    <a href="commands.html" class="block px-3 py-2 text-gray-300 hover:text-green-300 hover:bg-gray-800 rounded-md">Commands</a>
+                    <a href="examples.html" class="block px-3 py-2 text-gray-300 hover:text-green-300 hover:bg-gray-800 rounded-md">DevOps Examples</a>
                 </div>
             </div>
         </div>
@@ -190,7 +339,7 @@
                         autocomplete="off"
                     >
                     <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
-                        <kbd class="px-2 py-1 bg-gray-700 text-gray-300 rounded text-sm">Ctrl+K</kbd>
+                        <!-- <kbd class="px-2 py-1 bg-gray-700 text-gray-300 rounded text-sm">Ctrl+K</kbd> -->
                     </div>
                 </div>
                 
@@ -412,12 +561,28 @@
     <section class="py-20 bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl font-bold text-white mb-4">Command Usage Analytics</h2>
+                <h2 class="text-4xl font-bold text-white mb-4"> Analytics</h2>
                 <p class="text-xl text-gray-400">Popular commands by category in the DevOps community</p>
             </div>
             
-            <div class="bg-black bg-opacity-50 rounded-lg p-8 fade-in">
-                <div id="command-chart" style="height: 400px;"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Core Commands Chart -->
+                <div class="bg-black bg-opacity-50 rounded-lg p-6 fade-in">
+                    <div class="mb-4">
+                        <h3 class="text-2xl font-bold text-white text-center">Core Commands</h3>
+                        <p class="text-sm text-gray-400 text-center mt-2">Command Usage by Category</p>
+                    </div>
+                    <div id="command-chart" style="height: 450px;"></div>
+                </div>
+                
+                <!-- DevOps Commands Chart -->
+                <div class="bg-black bg-opacity-50 rounded-lg p-6 fade-in">
+                    <div class="mb-4">
+                        <h3 class="text-2xl font-bold text-white text-center">DevOps Commands</h3>
+                        <p class="text-sm text-gray-400 text-center mt-2">DevOps Commands by Category</p>
+                    </div>
+                    <div id="devops-chart" style="height: 450px;"></div>
+                </div>
             </div>
         </div>
     </section>
@@ -436,6 +601,242 @@
         </div>
     </footer>
 
+    <script src="examples-data.js"></script>
     <script src="main.js"></script>
+    <script>
+        // Birthday Notification Logic
+        function showBirthdayNotification() {
+            // Check if notification was already shown
+            const notificationShown = localStorage.getItem('birthday-notification-shown');
+            if (notificationShown) {
+                return;
+            }
+            
+            // Show notification after a short delay
+            setTimeout(() => {
+                const notification = document.getElementById('birthday-notification');
+                if (notification) {
+                    notification.classList.add('show');
+                }
+            }, 1000);
+        }
+        
+        function closeBirthdayNotification() {
+            const notification = document.getElementById('birthday-notification');
+            if (notification) {
+                notification.classList.remove('show');
+                // Mark as shown so it won't appear again
+                localStorage.setItem('birthday-notification-shown', 'true');
+            }
+        }
+        
+        // Show notification when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            showBirthdayNotification();
+            startCountdown();
+            initializeDevOpsChart();
+            setupMobileMenu();
+        });
+
+        // Countdown Timer Function
+        function startCountdown() {
+            // Set target date to November 21st of current year or next year
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            let targetDate = new Date(currentYear, 10, 21); // November 21st (month is 0-indexed)
+            
+            // If birthday has passed this year, set for next year
+            if (targetDate < now) {
+                targetDate = new Date(currentYear + 1, 10, 21);
+            }
+            
+            function updateCountdown() {
+                const now = new Date();
+                const timeLeft = targetDate - now;
+                
+                if (timeLeft > 0) {
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    
+                    // Update the countdown display
+                    const daysEl = document.getElementById('days');
+                    const hoursEl = document.getElementById('hours');
+                    const minutesEl = document.getElementById('minutes');
+                    const secondsEl = document.getElementById('seconds');
+                    
+                    if (daysEl) daysEl.textContent = days.toString().padStart(2, '0');
+                    if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0');
+                    if (minutesEl) minutesEl.textContent = minutes.toString().padStart(2, '0');
+                    if (secondsEl) secondsEl.textContent = seconds.toString().padStart(2, '0');
+                } else {
+                    // Birthday has arrived!
+                    const countdownEl = document.getElementById('countdown');
+                    if (countdownEl) {
+                        countdownEl.innerHTML = '<div class="text-4xl text-green-400">🎉 IT\'S YOUR BIRTHDAY! 🎉</div>';
+                    }
+                }
+            }
+            
+            // Update immediately and then every second
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        // DevOps Examples Chart
+        function initializeDevOpsChart() {
+            if (typeof echarts === 'undefined') return;
+            
+            const chartContainer = document.getElementById('devops-chart');
+            if (!chartContainer) return;
+            
+            const chart = echarts.init(chartContainer);
+            
+            // Calculate command counts by category
+            const categoryCounts = {};
+            devopsExamples.forEach(section => {
+                const category = section.category;
+                if (!categoryCounts[category]) {
+                    categoryCounts[category] = 0;
+                }
+                categoryCounts[category] += section.commands.length;
+            });
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: '#1a1a1a',
+                    borderColor: '#00ff41',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#ffffff',
+                        fontSize: 12
+                    },
+                    formatter: '{b}: {c} commands ({d}%)',
+                    position: function (point, params, dom, rect, size) {
+                        return [point[0] + 10, point[1] - 10];
+                    }
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    top: 'center',
+                    itemGap: 6,
+                    textStyle: {
+                        color: '#ffffff',
+                        fontSize: 10
+                    },
+                    itemWidth: 10,
+                    itemHeight: 10
+                },
+                series: [
+                    {
+                        name: 'DevOps Commands',
+                        type: 'pie',
+                        radius: '50%',
+                        center: ['65%', '50%'],
+                        avoidLabelOverlap: true,
+                        data: [
+                            { value: categoryCounts.monitoring || 0, name: 'Monitoring', itemStyle: { color: '#00ff41' } },
+                            { value: categoryCounts.backup || 0, name: 'Backup', itemStyle: { color: '#0066cc' } },
+                            { value: categoryCounts.deployment || 0, name: 'Deployment', itemStyle: { color: '#ffd700' } },
+                            { value: categoryCounts.security || 0, name: 'Security', itemStyle: { color: '#dc143c' } },
+                            { value: categoryCounts.automation || 0, name: 'Automation', itemStyle: { color: '#8a8a8a' } }
+                        ],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 255, 65, 0.5)'
+                            }
+                        },
+                        label: {
+                            show: true,
+                            formatter: '{b}\n{c}',
+                            color: '#ffffff',
+                            fontSize: 10,
+                            fontWeight: 'bold',
+                            position: 'outside'
+                        },
+                        labelLine: {
+                            show: true,
+                            length: 15,
+                            length2: 10,
+                            lineStyle: {
+                                color: '#666666',
+                                width: 1
+                            }
+                        }
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            // Resize chart on window resize
+            window.addEventListener('resize', () => {
+                chart.resize();
+            });
+        }
+
+        // Mobile Menu Functionality
+        function setupMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            console.log('Mobile menu elements:', { mobileMenuBtn, mobileMenu });
+            
+            if (mobileMenuBtn && mobileMenu) {
+                console.log('Setting up mobile menu...');
+                
+                mobileMenuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Mobile menu button clicked');
+                    console.log('Menu classes before toggle:', mobileMenu.className);
+                    
+                    // Toggle mobile menu visibility
+                    mobileMenu.classList.toggle('hidden');
+                    
+                    console.log('Menu classes after toggle:', mobileMenu.className);
+                    console.log('Menu is hidden:', mobileMenu.classList.contains('hidden'));
+                    
+                    // Change icon based on menu state
+                    const icon = mobileMenuBtn.querySelector('svg');
+                    if (mobileMenu.classList.contains('hidden')) {
+                        // Show hamburger icon
+                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+                        console.log('Menu hidden - showing hamburger icon');
+                    } else {
+                        // Show close icon
+                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+                        console.log('Menu visible - showing close icon');
+                    }
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !mobileMenu.contains(event.target)) {
+                        mobileMenu.classList.add('hidden');
+                        const icon = mobileMenuBtn.querySelector('svg');
+                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+                    }
+                });
+                
+                // Close menu when window is resized to desktop
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth >= 768) { // md breakpoint
+                        mobileMenu.classList.add('hidden');
+                        const icon = mobileMenuBtn.querySelector('svg');
+                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+                    }
+                });
+            } else {
+                console.error('Mobile menu elements not found:', { mobileMenuBtn, mobileMenu });
+            }
+        }
+    </script>
 </body>
 </html>
