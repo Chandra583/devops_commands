@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Command Handbook - DevOps Engineer Reference</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --terminal-bg: #1a1a1a;
+            --terminal-green: #00ff41;
+            --terminal-amber: #ffd700;
+            --terminal-gray: #8a8a8a;
+            --terminal-red: #dc143c;
+            --terminal-blue: #0066cc;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--terminal-bg);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .terminal-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+            position: relative;
+        }
+        
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image: 
+                linear-gradient(90deg, transparent 50%, rgba(0, 255, 65, 0.1) 50%),
+                linear-gradient(transparent 50%, rgba(0, 255, 65, 0.1) 50%);
+            background-size: 50px 50px, 50px 50px;
+            animation: matrix-flow 20s linear infinite;
+        }
+        
+        @keyframes matrix-flow {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-50px); }
+        }
+        
+        .glow-green {
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        
+        .glow-amber {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .command-card {
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .command-card:hover {
+            transform: translateY(-5px) rotateX(5deg);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.2);
+            border-color: var(--terminal-green);
+        }
+        
+        .search-input {
+            background: rgba(26, 26, 26, 0.9);
+            border: 2px solid var(--terminal-green);
+            color: var(--terminal-green);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
+        }
+        
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+            color: var(--terminal-green);
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--terminal-green);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .stats-card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s ease;
+        }
+    </style>
+</head>
+<body class="index-page">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-green-500 rounded flex items-center justify-center">
+                        <span class="text-black font-bold text-sm">$</span>
+                    </div>
+                    <span class="terminal-font text-green-400 font-bold text-xl">LinuxCmd</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-green-400 hover:text-green-300 px-3 py-2">Search</a>
+                    <a href="commands.html" class="nav-link text-gray-300 hover:text-green-300 px-3 py-2">Commands</a>
+                    <a href="scripting.html" class="nav-link text-gray-300 hover:text-green-300 px-3 py-2">Scripting</a>
+                    <a href="examples.html" class="nav-link text-gray-300 hover:text-green-300 px-3 py-2">Examples</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-green-400 hover:text-green-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-bg min-h-screen flex items-center justify-center relative pt-16">
+        <div class="matrix-bg"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-50"></div>
+        
+        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="mb-8">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6">
+                    <span class="terminal-font text-green-400">Linux Command</span>
+                    <br>
+                    <span class="text-white">Handbook</span>
+                </h1>
+                <div class="text-xl md:text-2xl text-gray-300 mb-8">
+                    <span id="typed-text" class="terminal-font text-amber-400"></span>
+                </div>
+            </div>
+            
+            <!-- Command Search -->
+            <div class="max-w-2xl mx-auto mb-12">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="command-search"
+                        class="search-input w-full px-6 py-4 rounded-lg text-lg terminal-font"
+                        placeholder="Search commands..."
+                        autocomplete="off"
+                    >
+                    <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
+                        <kbd class="px-2 py-1 bg-gray-700 text-gray-300 rounded text-sm">Ctrl+K</kbd>
+                    </div>
+                </div>
+                
+                <!-- Search Results -->
+                <div id="search-results" class="mt-4 bg-black bg-opacity-90 rounded-lg border border-green-500 max-h-96 overflow-y-auto hidden">
+                    <!-- Results will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                <div class="stats-card p-6 rounded-lg text-center">
+                    <div class="text-3xl font-bold text-green-400 terminal-font">200+</div>
+                    <div class="text-sm text-gray-400">Commands</div>
+                </div>
+                <div class="stats-card p-6 rounded-lg text-center">
+                    <div class="text-3xl font-bold text-amber-400 terminal-font">50+</div>
+                    <div class="text-sm text-gray-400">Examples</div>
+                </div>
+                <div class="stats-card p-6 rounded-lg text-center">
+                    <div class="text-3xl font-bold text-blue-400 terminal-font">15+</div>
+                    <div class="text-sm text-gray-400">Categories</div>
+                </div>
+                <div class="stats-card p-6 rounded-lg text-center">
+                    <div class="text-3xl font-bold text-red-400 terminal-font">24/7</div>
+                    <div class="text-sm text-gray-400">Learning</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Command Categories -->
+    <section class="py-20 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl font-bold text-white mb-4">Command Categories</h2>
+                <p class="text-xl text-gray-400">Explore Linux commands organized by functionality</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="command-card p-8 rounded-lg fade-in">
+                    <div class="w-16 h-16 bg-green-500 rounded-lg flex items-center justify-center mb-6 mx-auto">
+                        <svg class="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm2-2v12h12V2H4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-green-400 mb-4 text-center terminal-font">Basic Commands</h3>
+                    <p class="text-gray-400 text-center mb-6">File operations, navigation, and system information</p>
+                    <div class="text-center">
+                        <span class="text-sm text-gray-500 terminal-font">ls, cd, pwd, mkdir, rm, cp, mv</span>
+                    </div>
+                </div>
+                
+                <div class="command-card p-8 rounded-lg fade-in">
+                    <div class="w-16 h-16 bg-blue-500 rounded-lg flex items-center justify-center mb-6 mx-auto">
+                        <svg class="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-blue-400 mb-4 text-center terminal-font">Networking</h3>
+                    <p class="text-gray-400 text-center mb-6">IP configuration, DNS, SSH, and network monitoring</p>
+                    <div class="text-center">
+                        <span class="text-sm text-gray-500 terminal-font">ip, ping, ssh, curl, wget, netstat</span>
+                    </div>
+                </div>
+                
+                <div class="command-card p-8 rounded-lg fade-in">
+                    <div class="w-16 h-16 bg-amber-500 rounded-lg flex items-center justify-center mb-6 mx-auto">
+                        <svg class="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-amber-400 mb-4 text-center terminal-font">Process Management</h3>
+                    <p class="text-gray-400 text-center mb-6">System monitoring, process control, and service management</p>
+                    <div class="text-center">
+                        <span class="text-sm text-gray-500 terminal-font">ps, top, kill, systemctl, journalctl</span>
+                    </div>
+                </div>
+                
+                <div class="command-card p-8 rounded-lg fade-in">
+                    <div class="w-16 h-16 bg-red-500 rounded-lg flex items-center justify-center mb-6 mx-auto">
+                        <svg class="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-red-400 mb-4 text-center terminal-font">File System</h3>
+                    <p class="text-gray-400 text-center mb-6">Disk usage, mounting, and storage management</p>
+                    <div class="text-center">
+                        <span class="text-sm text-gray-500 terminal-font">df, du, mount, fdisk, tar, rsync</span>
+                    </div>
+                </div>
+                
+                <div class="command-card p-8 rounded-lg fade-in">
+                    <div class="w-16 h-16 bg-purple-500 rounded-lg flex items-center justify-center mb-6 mx-auto">
+                        <svg class="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-purple-400 mb-4 text-center terminal-font">Permissions</h3>
+                    <p class="text-gray-400 text-center mb-6">User management, file permissions, and security</p>
+                    <div class="text-center">
+                        <span class="text-sm text-gray-500 terminal-font">chmod, chown, sudo, useradd, passwd</span>
+                    </div>
+                </div>
+                
+                <div class="command-card p-8 rounded-lg fade-in">
+                    <div class="w-16 h-16 bg-cyan-500 rounded-lg flex items-center justify-center mb-6 mx-auto">
+                        <svg class="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-cyan-400 mb-4 text-center terminal-font">Package Management</h3>
+                    <p class="text-gray-400 text-center mb-6">Software installation and system updates</p>
+                    <div class="text-center">
+                        <span class="text-sm text-gray-500 terminal-font">apt, yum, dnf, pacman, snap</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Commands -->
+    <section class="py-20 bg-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl font-bold text-white mb-4">Most Popular Commands</h2>
+                <p class="text-xl text-gray-400">Essential commands every DevOps engineer should know</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="command-card p-6 rounded-lg fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-green-400 terminal-font">ls -lah</h3>
+                        <button class="copy-btn text-gray-400 hover:text-green-400" data-command="ls -lah">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-400 mb-4">List all files with detailed information in human-readable format</p>
+                    <div class="text-sm text-gray-500 terminal-font">Usage: ls -lah /path/to/directory</div>
+                </div>
+                
+                <div class="command-card p-6 rounded-lg fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-green-400 terminal-font">grep -r</h3>
+                        <button class="copy-btn text-gray-400 hover:text-green-400" data-command="grep -r">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-400 mb-4">Search for text patterns recursively in directories</p>
+                    <div class="text-sm text-gray-500 terminal-font">Usage: grep -r "pattern" /path/to/search</div>
+                </div>
+                
+                <div class="command-card p-6 rounded-lg fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-green-400 terminal-font">systemctl</h3>
+                        <button class="copy-btn text-gray-400 hover:text-green-400" data-command="systemctl status">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-400 mb-4">Control systemd services and check system status</p>
+                    <div class="text-sm text-gray-500 terminal-font">Usage: systemctl status service-name</div>
+                </div>
+                
+                <div class="command-card p-6 rounded-lg fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-green-400 terminal-font">docker ps</h3>
+                        <button class="copy-btn text-gray-400 hover:text-green-400" data-command="docker ps">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-400 mb-4">List running Docker containers with status information</p>
+                    <div class="text-sm text-gray-500 terminal-font">Usage: docker ps -a (show all containers)</div>
+                </div>
+                
+                <div class="command-card p-6 rounded-lg fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-green-400 terminal-font">kubectl get</h3>
+                        <button class="copy-btn text-gray-400 hover:text-green-400" data-command="kubectl get pods">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-400 mb-4">List Kubernetes resources like pods, services, and deployments</p>
+                    <div class="text-sm text-gray-500 terminal-font">Usage: kubectl get pods -n namespace</div>
+                </div>
+                
+                <div class="command-card p-6 rounded-lg fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-green-400 terminal-font">git status</h3>
+                        <button class="copy-btn text-gray-400 hover:text-green-400" data-command="git status">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-400 mb-4">Check the current state of your Git repository</p>
+                    <div class="text-sm text-gray-500 terminal-font">Usage: git status -s (short format)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Command Usage Chart -->
+    <section class="py-20 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl font-bold text-white mb-4">Command Usage Analytics</h2>
+                <p class="text-xl text-gray-400">Popular commands by category in the DevOps community</p>
+            </div>
+            
+            <div class="bg-black bg-opacity-50 rounded-lg p-8 fade-in">
+                <div id="command-chart" style="height: 400px;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+                <div class="w-8 h-8 bg-green-500 rounded flex items-center justify-center">
+                    <span class="text-black font-bold text-sm">$</span>
+                </div>
+                <span class="terminal-font text-green-400 font-bold text-xl">LinuxCmd</span>
+            </div>
+            <p class="text-gray-400 mb-4">Master Linux commands and shell scripting for DevOps excellence</p>
+            <p class="text-gray-500 text-sm">© 2025 Linux Command Handbook. Built for theDevOps community. build by @Chandra583*</p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
